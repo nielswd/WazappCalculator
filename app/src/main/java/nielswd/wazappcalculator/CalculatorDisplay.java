@@ -14,15 +14,20 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridLayout;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
 public class CalculatorDisplay extends AppCompatActivity {
-    private EditText        displayEditText;
+    private TextView        displayEditText;
     private GridLayout      numbersGrid;
     private GridLayout      opGrid;
-    private String[]        numbersList = new String[] {"7","8","9","4","5","6","1","2","3",".","0","="};
-    private String[]        opList = new String[] {"/","*","-","+", "C"};
+    private TextView        cleanButton;
+    private TextView        calculateButton;
+
+    private String[]        numbersList = new String[] {"7","8","9","4","5","6","1","2","3",".","0"};
+    private String[]        opList = new String[] {"/","*","-","+"};
+
     private float           firstNumber;
     private float           secondNumber;
     private String          operation;
@@ -31,13 +36,12 @@ public class CalculatorDisplay extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calculator_display);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         initComponents();
         addNumbers();
         addOperations();
     }
+
 
     private void addOperations() {
         for (final String element : opList){
@@ -46,13 +50,9 @@ public class CalculatorDisplay extends AppCompatActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if  (element == "C"){
-                        cleanDisplay();
-                    } else {
-                        String newText = displayEditText.getText() + " " + element + " ";
-                        displayEditText.setText(newText);
-                        operation = element;
-                    }
+                    String newText = displayEditText.getText() + " " + element + " ";
+                    displayEditText.setText(newText);
+                    operation = element;
                 }
             });
             opGrid.addView(button);
@@ -66,12 +66,8 @@ public class CalculatorDisplay extends AppCompatActivity {
                 button.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if (element == "="){
-                            calculate();
-                        } else {
-                            String newText = displayEditText.getText() + element;
-                            displayEditText.setText(newText);
-                        }
+                        String newText = displayEditText.getText() + element;
+                        displayEditText.setText(newText);
                     }
                 });
                 numbersGrid.addView(button);
@@ -110,8 +106,13 @@ public class CalculatorDisplay extends AppCompatActivity {
     }
 
     private void divOp() {
-        Float resDiv = firstNumber / secondNumber;
-        displayEditText.setText(Float.toString(resDiv));
+        if (secondNumber == 0){
+            cleanDisplay();
+            displayEditText.setText("Err. Div By 0");
+        } else {
+            Float resDiv = firstNumber / secondNumber;
+            displayEditText.setText(Float.toString(resDiv));
+        }
     }
 
     private void multOp() {
@@ -133,9 +134,23 @@ public class CalculatorDisplay extends AppCompatActivity {
         displayEditText.setText("");
     }
     private void initComponents() {
-        displayEditText = (EditText) findViewById(R.id.displayEditText);
+        displayEditText = (TextView) findViewById(R.id.displayEditText);
         numbersGrid     = (GridLayout) findViewById(R.id.numbersGrid);
         opGrid          = (GridLayout) findViewById(R.id.opGrid);
+        cleanButton     = (TextView)   findViewById(R.id.cleanButton);
+        calculateButton     = (TextView)   findViewById(R.id.calculateButton);
+        cleanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                cleanDisplay();
+            }
+        });
+        calculateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                calculate();
+            }
+        });
     }
 
 
