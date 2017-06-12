@@ -1,8 +1,10 @@
 package nielswd.wazappcalculator;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -20,7 +22,7 @@ public class CalculatorDisplay extends AppCompatActivity {
     private GridLayout      numbersGrid;
     private GridLayout      opGrid;
     private String[]        numbersList = new String[] {"7","8","9","4","5","6","1","2","3",".","0","="};
-    private String[]        opList = new String[] {"/","*","-","+"};
+    private String[]        opList = new String[] {"/","*","-","+", "C"};
     private float           firstNumber;
     private float           secondNumber;
     private String          operation;
@@ -44,9 +46,13 @@ public class CalculatorDisplay extends AppCompatActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    String newText = displayEditText.getText() + " " +  element + " ";
-                    displayEditText.setText(newText);
-                    operation = element;
+                    if  (element == "C"){
+                        cleanDisplay();
+                    } else {
+                        String newText = displayEditText.getText() + " " + element + " ";
+                        displayEditText.setText(newText);
+                        operation = element;
+                    }
                 }
             });
             opGrid.addView(button);
@@ -75,10 +81,19 @@ public class CalculatorDisplay extends AppCompatActivity {
     private void calculate() {
         String elements = displayEditText.getText().toString();
         String[] seperateElements = elements.split(" ");
-        firstNumber = Float.valueOf(seperateElements[0]);
-        operation = seperateElements[1];
-        secondNumber = Float.valueOf(seperateElements[2]);
-        makeCalcul();
+        if (seperateElements.length != 3){
+            if (seperateElements.length == 1){
+                displayEditText.setText(seperateElements[0]);
+            } else {
+                cleanDisplay();
+                displayEditText.setText("Err.");
+            }
+        } else {
+            firstNumber = Float.valueOf(seperateElements[0]);
+            operation = seperateElements[1];
+            secondNumber = Float.valueOf(seperateElements[2]);
+            makeCalcul();
+        }
     }
 
     private void makeCalcul() {
@@ -114,6 +129,9 @@ public class CalculatorDisplay extends AppCompatActivity {
         displayEditText.setText(Float.toString(resDiv));
     }
 
+    private void cleanDisplay(){
+        displayEditText.setText("");
+    }
     private void initComponents() {
         displayEditText = (EditText) findViewById(R.id.displayEditText);
         numbersGrid     = (GridLayout) findViewById(R.id.numbersGrid);
